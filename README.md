@@ -102,3 +102,7 @@ The script `scripts/first-safe-migration-batch.ps1` performs the first tightly s
 It defaults to dry-run mode, prints a WhatIf-style preview in the console, and writes a CSV report after each run. Resolve-related folders are intentionally excluded from this script, including Resolve, Blackmagic, and ATEM-related locations. Review the generated CSV report after every run before expanding the migration scope.
 
 On this machine, the original first-batch source paths no longer exist and the expected destination paths are understood to contain the migrated content. As a result, a dry-run currently reports `MissingSource` for the original directory move sources because the first migration batch has already been completed.
+
+## Media Toolchain Storage Standard
+
+The document `docs/media-toolchain-storage-standard.md` defines the canonical `C:\Data` storage model for DaVinci Resolve, OBS Studio, Blackmagic/ATEM, and Resolume. Use it to keep media storage, exports, app-managed folders, backups, and project-specific creative work aligned under one coherent path standard.
