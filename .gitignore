@@ -1,0 +1,5 @@
+mock/
+audit-report-*.csv
+migration-report-*.csv
+*.tmp
+*.log
