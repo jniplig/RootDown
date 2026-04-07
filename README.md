@@ -110,3 +110,7 @@ The document `docs/media-toolchain-storage-standard.md` defines the canonical `C
 ## Batch 2 Assessment and Plan
 
 The document `docs/batch-2-assessment-and-plan.md` defines the cautious Batch 2 assessment and migration-planning standard for Blackmagic Design, ATEM Autosave, Resolume Arena, and Resolume Wire. Use it before repointing or relocating workflow-sensitive media folders.
+
+## Batch 2 Copy-First Script
+
+The script `scripts/batch-2-copy-first.ps1` performs the first approved Batch 2 copy-first operations for selected ATEM and Resolume folders. It defaults to dry-run mode, is intentionally copy-only, excludes live app-managed paths not yet approved for copying, and writes a CSV report that should be reviewed after each run.
