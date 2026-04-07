@@ -106,3 +106,7 @@ On this machine, the original first-batch source paths no longer exist and the e
 ## Media Toolchain Storage Standard
 
 The document `docs/media-toolchain-storage-standard.md` defines the canonical `C:\Data` storage model for DaVinci Resolve, OBS Studio, Blackmagic/ATEM, and Resolume. Use it to keep media storage, exports, app-managed folders, backups, and project-specific creative work aligned under one coherent path standard.
+
+## Batch 2 Assessment and Plan
+
+The document `docs/batch-2-assessment-and-plan.md` defines the cautious Batch 2 assessment and migration-planning standard for Blackmagic Design, ATEM Autosave, Resolume Arena, and Resolume Wire. Use it before repointing or relocating workflow-sensitive media folders.
