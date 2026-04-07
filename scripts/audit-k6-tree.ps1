@@ -104,6 +104,43 @@ function Get-KeywordMatch {
     return $false
 }
 
+function Get-MatchedKeyword {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Value,
+
+        [Parameter(Mandatory)]
+        [string[]]$Keywords
+    )
+
+    foreach ($keyword in $Keywords) {
+        if ($Value -match [regex]::Escape($keyword)) {
+            return $keyword
+        }
+    }
+
+    return $null
+}
+
+function New-ClassificationResult {
+    param(
+        [Parameter(Mandatory)]
+        [string]$LikelyCategory,
+
+        [Parameter(Mandatory)]
+        [string]$SuggestedTopLevelFolder,
+
+        [Parameter(Mandatory)]
+        [string]$Notes
+    )
+
+    return @{
+        LikelyCategory          = $LikelyCategory
+        SuggestedTopLevelFolder = $SuggestedTopLevelFolder
+        Notes                   = $Notes
+    }
+}
+
 function Get-AuditClassification {
     param(
         [Parameter(Mandatory)]
@@ -113,6 +150,7 @@ function Get-AuditClassification {
     $name = $Item.Name.ToLowerInvariant()
     $path = $Item.FullName.ToLowerInvariant()
     $extension = if ($Item.PSIsContainer) { '' } else { $Item.Extension.ToLowerInvariant() }
+    $isDirectory = $Item.PSIsContainer
 
     # These heuristics are intentionally simple and conservative. When no rule
     # matches strongly, the script falls back to 00_INBOX for manual review.
@@ -120,68 +158,199 @@ function Get-AuditClassification {
     $systemExtensions = @('.ps1', '.psm1', '.psd1', '.sh', '.bat', '.cmd', '.reg', '.ini', '.cfg', '.conf', '.json', '.yaml', '.yml', '.xml', '.log', '.inf', '.sys', '.drv', '.msi', '.exe')
     $referenceExtensions = @('.pdf', '.epub')
     $archiveExtensions = @('.zip', '.7z', '.rar', '.tar', '.gz')
+    $shortcutExtensions = @('.lnk', '.url')
 
-    if ($mediaExtensions -contains $extension -or (Get-KeywordMatch -Value $name -Keywords @('photo', 'image', 'video', 'audio', 'media', 'recording', 'screenshot'))) {
-        return @{
-            LikelyCategory          = 'Media asset'
-            SuggestedTopLevelFolder = '30_MEDIA'
-            Notes                   = 'Matched media extension or media-related keyword.'
+    # Keep the keyword sets explicit and readable. Directories are matched
+    # against both the item name and full path before falling back to review.
+    $systemKeywords = @(
+        'powershell', 'windowspowershell', 'winbox', 'blackmagic', 'atem',
+        'scripts', 'config', 'configs', 'backup', 'backups', 'drivers',
+        'installers', 'export', 'exports', 'inventory', 'inventories',
+        'profile', 'profiles', 'system', 'setup', 'tool', 'tools'
+    )
+    $mediaKeywords = @(
+        'resolume', 'obs', 'audio', 'video', 'media', 'clips', 'recordings',
+        'footage', 'samples', 'stems', 'photo', 'image', 'screenshot'
+    )
+    $personalKeywords = @(
+        'family', 'finance', 'property', 'travel', 'passport', 'receipt',
+        'receipts', 'warranty', 'warranties', 'id', 'legal', 'insurance',
+        'bank', 'tax', 'visa', 'health', 'medical', 'identity', 'license'
+    )
+    $operationsKeywords = @(
+        'template', 'templates', 'office templates', 'office-template',
+        'recurring admin', 'admin', 'operations', 'invoice', 'policy',
+        'process', 'procedure', 'meeting', 'school operations', 'curriculum',
+        'attendance', 'schedule', 'forms', 'checklist'
+    )
+    $projectKeywords = @(
+        'project', 'projects', 'client', 'proposal', 'deliverable', 'brief',
+        'lesson', 'course', 'module', 'sprint', 'milestone', 'launch'
+    )
+    $referenceKeywords = @('manual', 'guide', 'reference', 'handbook', 'spec', 'datasheet')
+    $historicalArchiveKeywords = @('archive', 'archived', 'old', 'historical', 'legacy', 'backup', 'backups')
+
+    $nameSystemKeyword = Get-MatchedKeyword -Value $name -Keywords $systemKeywords
+    $pathSystemKeyword = Get-MatchedKeyword -Value $path -Keywords $systemKeywords
+    $nameMediaKeyword = Get-MatchedKeyword -Value $name -Keywords $mediaKeywords
+    $pathMediaKeyword = Get-MatchedKeyword -Value $path -Keywords $mediaKeywords
+    $namePersonalKeyword = Get-MatchedKeyword -Value $name -Keywords $personalKeywords
+    $pathPersonalKeyword = Get-MatchedKeyword -Value $path -Keywords $personalKeywords
+    $nameOperationsKeyword = Get-MatchedKeyword -Value $name -Keywords $operationsKeywords
+    $pathOperationsKeyword = Get-MatchedKeyword -Value $path -Keywords $operationsKeywords
+    $nameProjectKeyword = Get-MatchedKeyword -Value $name -Keywords $projectKeywords
+    $pathProjectKeyword = Get-MatchedKeyword -Value $path -Keywords $projectKeywords
+    $nameReferenceKeyword = Get-MatchedKeyword -Value $name -Keywords $referenceKeywords
+    $pathHistoricalArchiveKeyword = Get-MatchedKeyword -Value $path -Keywords $historicalArchiveKeywords
+    $nameHistoricalArchiveKeyword = Get-MatchedKeyword -Value $name -Keywords $historicalArchiveKeywords
+
+    if ($isDirectory) {
+        if ($nameSystemKeyword) {
+            return New-ClassificationResult -LikelyCategory 'System or technical directory' -SuggestedTopLevelFolder '50_SYSTEM' -Notes ("Matched directory keyword '{0}' in directory name." -f $nameSystemKeyword)
         }
-    }
 
-    if ($systemExtensions -contains $extension -or (Get-KeywordMatch -Value $path -Keywords @('script', 'config', 'export', 'inventory', 'installer', 'driver', 'backup', 'system', 'setup'))) {
-        return @{
-            LikelyCategory          = 'System or technical asset'
-            SuggestedTopLevelFolder = '50_SYSTEM'
-            Notes                   = 'Matched script, configuration, export, installer, or technical keyword.'
+        if ($pathSystemKeyword) {
+            return New-ClassificationResult -LikelyCategory 'System or technical directory' -SuggestedTopLevelFolder '50_SYSTEM' -Notes ("Matched path keyword '{0}' for a directory." -f $pathSystemKeyword)
         }
-    }
 
-    if ((Get-KeywordMatch -Value $path -Keywords @('finance', 'bank', 'tax', 'property', 'travel', 'passport', 'visa', 'family', 'receipt', 'warranty', 'insurance', 'medical', 'health', 'legal', 'identity', 'license'))) {
-        return @{
-            LikelyCategory          = 'Personal record'
-            SuggestedTopLevelFolder = '25_PERSONAL'
-            Notes                   = 'Matched personal administration keyword.'
+        if ($nameMediaKeyword) {
+            return New-ClassificationResult -LikelyCategory 'Media or studio directory' -SuggestedTopLevelFolder '30_MEDIA' -Notes ("Matched directory keyword '{0}' in directory name." -f $nameMediaKeyword)
         }
-    }
 
-    if ($referenceExtensions -contains $extension -or (Get-KeywordMatch -Value $name -Keywords @('manual', 'guide', 'reference', 'handbook', 'spec', 'datasheet'))) {
-        return @{
-            LikelyCategory          = 'Reference material'
-            SuggestedTopLevelFolder = '40_REFERENCE'
-            Notes                   = 'Matched reference-like extension or keyword.'
+        if ($pathMediaKeyword) {
+            return New-ClassificationResult -LikelyCategory 'Media or studio directory' -SuggestedTopLevelFolder '30_MEDIA' -Notes ("Matched path keyword '{0}' for a directory." -f $pathMediaKeyword)
         }
-    }
 
-    if ($archiveExtensions -contains $extension -or (Get-KeywordMatch -Value $path -Keywords @('archive', 'old', 'historical', 'legacy'))) {
-        return @{
-            LikelyCategory          = 'Archived package or historical content'
-            SuggestedTopLevelFolder = '90_ARCHIVE'
-            Notes                   = 'Matched compressed archive or archive-related keyword.'
+        if ($namePersonalKeyword) {
+            return New-ClassificationResult -LikelyCategory 'Personal records directory' -SuggestedTopLevelFolder '25_PERSONAL' -Notes ("Matched directory keyword '{0}' in directory name." -f $namePersonalKeyword)
         }
-    }
 
-    if (Get-KeywordMatch -Value $path -Keywords @('project', 'client', 'proposal', 'deliverable', 'brief', 'lesson', 'course')) {
-        return @{
-            LikelyCategory          = 'Project material'
-            SuggestedTopLevelFolder = '10_PROJECTS'
-            Notes                   = 'Matched project-oriented keyword.'
+        if ($pathPersonalKeyword) {
+            return New-ClassificationResult -LikelyCategory 'Personal records directory' -SuggestedTopLevelFolder '25_PERSONAL' -Notes ("Matched path keyword '{0}' for a directory." -f $pathPersonalKeyword)
         }
-    }
 
-    if (Get-KeywordMatch -Value $path -Keywords @('operations', 'admin', 'invoice', 'policy', 'process', 'procedure', 'meeting')) {
-        return @{
-            LikelyCategory          = 'Operational material'
-            SuggestedTopLevelFolder = '20_OPERATIONS'
-            Notes                   = 'Matched operations-related keyword.'
+        if ($nameOperationsKeyword) {
+            return New-ClassificationResult -LikelyCategory 'Operational directory' -SuggestedTopLevelFolder '20_OPERATIONS' -Notes ("Matched directory keyword '{0}' in directory name." -f $nameOperationsKeyword)
         }
+
+        if ($pathOperationsKeyword) {
+            return New-ClassificationResult -LikelyCategory 'Operational directory' -SuggestedTopLevelFolder '20_OPERATIONS' -Notes ("Matched path keyword '{0}' for a directory." -f $pathOperationsKeyword)
+        }
+
+        if ($nameProjectKeyword) {
+            return New-ClassificationResult -LikelyCategory 'Project directory' -SuggestedTopLevelFolder '10_PROJECTS' -Notes ("Matched directory keyword '{0}' in directory name." -f $nameProjectKeyword)
+        }
+
+        if ($pathProjectKeyword) {
+            return New-ClassificationResult -LikelyCategory 'Project directory' -SuggestedTopLevelFolder '10_PROJECTS' -Notes ("Matched path keyword '{0}' for a directory." -f $pathProjectKeyword)
+        }
+
+        if ($nameHistoricalArchiveKeyword) {
+            return New-ClassificationResult -LikelyCategory 'Archived directory' -SuggestedTopLevelFolder '90_ARCHIVE' -Notes ("Matched directory keyword '{0}' in directory name." -f $nameHistoricalArchiveKeyword)
+        }
+
+        return New-ClassificationResult -LikelyCategory 'Needs review' -SuggestedTopLevelFolder '00_INBOX' -Notes 'Fallback review: no strong directory keyword matched.'
     }
 
-    return @{
-        LikelyCategory          = 'Needs review'
-        SuggestedTopLevelFolder = '00_INBOX'
-        Notes                   = 'No strong heuristic match. Review manually.'
+    if ($shortcutExtensions -contains $extension) {
+        if ($pathSystemKeyword -or $nameSystemKeyword) {
+            $matchedKeyword = if ($nameSystemKeyword) { $nameSystemKeyword } else { $pathSystemKeyword }
+            return New-ClassificationResult -LikelyCategory 'Shortcut or link to a technical location' -SuggestedTopLevelFolder '50_SYSTEM' -Notes ("Shortcut rule: matched technical keyword '{0}'. Verify whether this belongs in system, reference, or operations." -f $matchedKeyword)
+        }
+
+        if ($pathOperationsKeyword -or $nameOperationsKeyword) {
+            $matchedKeyword = if ($nameOperationsKeyword) { $nameOperationsKeyword } else { $pathOperationsKeyword }
+            return New-ClassificationResult -LikelyCategory 'Shortcut or link to an operational location' -SuggestedTopLevelFolder '20_OPERATIONS' -Notes ("Shortcut rule: matched operations keyword '{0}'. Verify whether this belongs in system, reference, or operations." -f $matchedKeyword)
+        }
+
+        if ($nameReferenceKeyword) {
+            return New-ClassificationResult -LikelyCategory 'Shortcut or link to reference material' -SuggestedTopLevelFolder '40_REFERENCE' -Notes ("Shortcut rule: matched reference keyword '{0}'. Verify whether this belongs in system, reference, or operations." -f $nameReferenceKeyword)
+        }
+
+        return New-ClassificationResult -LikelyCategory 'Shortcut or link file' -SuggestedTopLevelFolder '20_OPERATIONS' -Notes 'Shortcut rule: verify whether this belongs in system, reference, or operations.'
     }
+
+    if ($archiveExtensions -contains $extension) {
+        if ($nameMediaKeyword -or $pathMediaKeyword) {
+            $matchedKeyword = if ($nameMediaKeyword) { $nameMediaKeyword } else { $pathMediaKeyword }
+            return New-ClassificationResult -LikelyCategory 'Compressed media package' -SuggestedTopLevelFolder '30_MEDIA' -Notes ("Archive rule: matched media keyword '{0}' in archive name or path." -f $matchedKeyword)
+        }
+
+        if ($nameSystemKeyword -or $pathSystemKeyword) {
+            $matchedKeyword = if ($nameSystemKeyword) { $nameSystemKeyword } else { $pathSystemKeyword }
+            return New-ClassificationResult -LikelyCategory 'Compressed technical package' -SuggestedTopLevelFolder '50_SYSTEM' -Notes ("Archive rule: matched technical keyword '{0}' in archive name or path." -f $matchedKeyword)
+        }
+
+        if ($nameHistoricalArchiveKeyword -or $pathHistoricalArchiveKeyword) {
+            $matchedKeyword = if ($nameHistoricalArchiveKeyword) { $nameHistoricalArchiveKeyword } else { $pathHistoricalArchiveKeyword }
+            return New-ClassificationResult -LikelyCategory 'Archived package or historical content' -SuggestedTopLevelFolder '90_ARCHIVE' -Notes ("Archive rule: matched archival keyword '{0}'." -f $matchedKeyword)
+        }
+
+        return New-ClassificationResult -LikelyCategory 'Compressed file requiring review' -SuggestedTopLevelFolder '00_INBOX' -Notes 'Archive rule: compressed file without a strong media, technical, or archival keyword match.'
+    }
+
+    if ($mediaExtensions -contains $extension) {
+        return New-ClassificationResult -LikelyCategory 'Media asset' -SuggestedTopLevelFolder '30_MEDIA' -Notes ("Extension rule: matched media extension '{0}'." -f $extension)
+    }
+
+    if ($nameMediaKeyword) {
+        return New-ClassificationResult -LikelyCategory 'Media or studio asset' -SuggestedTopLevelFolder '30_MEDIA' -Notes ("Matched file-name keyword '{0}'." -f $nameMediaKeyword)
+    }
+
+    if ($pathMediaKeyword) {
+        return New-ClassificationResult -LikelyCategory 'Media or studio asset' -SuggestedTopLevelFolder '30_MEDIA' -Notes ("Matched path keyword '{0}' for a file." -f $pathMediaKeyword)
+    }
+
+    if ($systemExtensions -contains $extension) {
+        return New-ClassificationResult -LikelyCategory 'System or technical asset' -SuggestedTopLevelFolder '50_SYSTEM' -Notes ("Extension rule: matched technical extension '{0}'." -f $extension)
+    }
+
+    if ($nameSystemKeyword) {
+        return New-ClassificationResult -LikelyCategory 'System or technical asset' -SuggestedTopLevelFolder '50_SYSTEM' -Notes ("Matched file-name keyword '{0}'." -f $nameSystemKeyword)
+    }
+
+    if ($pathSystemKeyword) {
+        return New-ClassificationResult -LikelyCategory 'System or technical asset' -SuggestedTopLevelFolder '50_SYSTEM' -Notes ("Matched path keyword '{0}' for a file." -f $pathSystemKeyword)
+    }
+
+    if ($namePersonalKeyword) {
+        return New-ClassificationResult -LikelyCategory 'Personal record' -SuggestedTopLevelFolder '25_PERSONAL' -Notes ("Matched file-name keyword '{0}'." -f $namePersonalKeyword)
+    }
+
+    if ($pathPersonalKeyword) {
+        return New-ClassificationResult -LikelyCategory 'Personal record' -SuggestedTopLevelFolder '25_PERSONAL' -Notes ("Matched path keyword '{0}' for a file." -f $pathPersonalKeyword)
+    }
+
+    if ($referenceExtensions -contains $extension) {
+        return New-ClassificationResult -LikelyCategory 'Reference material' -SuggestedTopLevelFolder '40_REFERENCE' -Notes ("Extension rule: matched reference extension '{0}'." -f $extension)
+    }
+
+    if ($nameReferenceKeyword) {
+        return New-ClassificationResult -LikelyCategory 'Reference material' -SuggestedTopLevelFolder '40_REFERENCE' -Notes ("Matched file-name keyword '{0}'." -f $nameReferenceKeyword)
+    }
+
+    if ($nameProjectKeyword) {
+        return New-ClassificationResult -LikelyCategory 'Project material' -SuggestedTopLevelFolder '10_PROJECTS' -Notes ("Matched file-name keyword '{0}'." -f $nameProjectKeyword)
+    }
+
+    if ($pathProjectKeyword) {
+        return New-ClassificationResult -LikelyCategory 'Project material' -SuggestedTopLevelFolder '10_PROJECTS' -Notes ("Matched path keyword '{0}' for a file." -f $pathProjectKeyword)
+    }
+
+    if ($nameOperationsKeyword) {
+        return New-ClassificationResult -LikelyCategory 'Operational material' -SuggestedTopLevelFolder '20_OPERATIONS' -Notes ("Matched file-name keyword '{0}'." -f $nameOperationsKeyword)
+    }
+
+    if ($pathOperationsKeyword) {
+        return New-ClassificationResult -LikelyCategory 'Operational material' -SuggestedTopLevelFolder '20_OPERATIONS' -Notes ("Matched path keyword '{0}' for a file." -f $pathOperationsKeyword)
+    }
+
+    if ($nameHistoricalArchiveKeyword -or $pathHistoricalArchiveKeyword) {
+        $matchedKeyword = if ($nameHistoricalArchiveKeyword) { $nameHistoricalArchiveKeyword } else { $pathHistoricalArchiveKeyword }
+        return New-ClassificationResult -LikelyCategory 'Archived or historical material' -SuggestedTopLevelFolder '90_ARCHIVE' -Notes ("Path keyword: matched archival keyword '{0}'." -f $matchedKeyword)
+    }
+
+    return New-ClassificationResult -LikelyCategory 'Needs review' -SuggestedTopLevelFolder '00_INBOX' -Notes 'Fallback review: no strong file heuristic matched.'
 }
 
 $selectedRoots = New-Object System.Collections.Generic.List[string]

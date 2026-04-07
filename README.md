@@ -23,6 +23,10 @@ The scripts in this repository are designed to support that model without taking
   Brief project overview, file inventory, and recommended usage sequence.
 - `docs/k6-organization-standard.md`
   Formal operating standard for the `C:\Data` folder model, including naming rules, tags, project structure, and maintenance expectations.
+- `docs/k6-first-migration-batch.md`
+  Operational plan for the first safe manual migration wave, including migration order, excluded items, and verification guidance.
+- `docs/github-publish-checklist.md`
+  Step-by-step checklist for attaching this local repository to a GitHub remote and publishing the existing `main` branch safely.
 
 ### Scripts
 
@@ -34,6 +38,8 @@ The scripts in this repository are designed to support that model without taking
   Conservative file renaming assistant that proposes compliant filenames using the standard naming pattern and defaults to dry-run behavior.
 - `scripts/audit-k6-tree.ps1`
   Audit-only PowerShell helper that inventories files and folders and suggests likely categories in the new model based on simple heuristics.
+- `scripts/first-safe-migration-batch.ps1`
+  Narrow PowerShell migration helper for the approved first batch of safe moves into `C:\Data`, with dry-run by default and CSV reporting.
 
 ## Recommended Usage Sequence
 
@@ -88,3 +94,11 @@ cd ~/projects/k6-organization
 ```powershell
 .\scripts\rename-to-standard.ps1 -Path C:\Data\00_INBOX -Recurse -ReportPath .\rename-report.csv
 ```
+
+## First Safe Migration Batch
+
+The script `scripts/first-safe-migration-batch.ps1` performs the first tightly scoped migration batch for the rollout. It moves only the approved `PowerShell`, `WindowsPowerShell`, and `WinBox_Windows` directories plus top-level audio files from `Downloads` with these extensions: `.mp3`, `.flac`, `.wav`, `.aiff`, and `.m4a`.
+
+It defaults to dry-run mode, prints a WhatIf-style preview in the console, and writes a CSV report after each run. Resolve-related folders are intentionally excluded from this script, including Resolve, Blackmagic, and ATEM-related locations. Review the generated CSV report after every run before expanding the migration scope.
+
+On this machine, the original first-batch source paths no longer exist and the expected destination paths are understood to contain the migrated content. As a result, a dry-run currently reports `MissingSource` for the original directory move sources because the first migration batch has already been completed.
