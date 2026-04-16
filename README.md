@@ -1,4 +1,4 @@
-# k6-organization
+# RootDown
 
 This repository defines and supports a standardized file organization model for a GMKTec K6 system. It contains the canonical folder standard, a safe WSL test helper, a Windows structure creation script, a conservative rename assistant, and an audit-only inventory script for classifying existing files before any migration work.
 
