@@ -16,5 +16,11 @@
       "purpose": "Personal initiatives and structured work that are not business projects but still benefit from deliberate organization."
     }
   ],
-  "folder_overrides": []
+  "folder_overrides": [],
+  "symlinked_folders": [
+    {
+      "key": "10_PROJECTS",
+      "target": null
+    }
+  ]
 }
