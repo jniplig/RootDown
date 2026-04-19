@@ -108,6 +108,58 @@ Findings are classified as:
 
 ---
 
+## Migration
+
+`migrate.py` moves existing files and folders from an unorganized source root into the RootDown standard. It runs in three explicit stages: scan, triage, and apply. Nothing is moved until `--apply` is explicitly passed — the scan and triage stages are entirely read-only, and the apply stage uses a copy-first strategy that verifies each copy before deleting the source.
+
+### Stage 1 — Scan
+
+```bash
+python migrate.py --report migrate.csv
+```
+
+The scanner reads every item at the top level of the source root (default: home directory), classifies each as `HIGH_RISK`, `CAUTION`, or `SAFE`, and suggests a destination folder. Results are written to `triage-log.json` and optionally to a CSV for review.
+
+### Stage 2 — Interactive Triage
+
+```bash
+python migrate.py --profile profiles/profile-personal.json
+```
+
+Each item is presented for a decision: `(m)ove`, `(s)kip`, `(p)rotect`, or `(d)efer`. Items are grouped by risk tier and presented in order:
+
+| Tier | Meaning |
+|------|---------|
+| `HIGH_RISK` | Matches a protected path pattern (AppData, .git, .venv, etc.) — reviewed individually, never batched |
+| `CAUTION` | No strong risk or safety signal — reviewed individually or in same-parent batches |
+| `SAFE` | Clear user content (photo, document, audio) — reviewed as destination-grouped batches |
+
+Triage sessions persist between runs. Quitting mid-session saves all decisions so far; the next run resumes where it left off and re-presents only undecided and deferred items. `defer` means "ask me again next session"; `skip` means "leave it where it is permanently".
+
+### Stage 3 — Apply
+
+```bash
+python migrate.py --apply
+```
+
+The apply pass reads `triage-log.json` and processes every item with `decision: "move"`. Before anything moves, it prints a summary and requires you to type `CONFIRM`:
+
+```
+Type CONFIRM to proceed, or anything else to abort:
+  >
+```
+
+Each item is copied first (`shutil.copy2` for files, `copytree` for directories), verified, and only then deleted from the source. If a filename already exists at the destination, the copy is written as `name_1.ext`, `name_2.ext`, and so on — the original is never overwritten. Every outcome is logged back to `triage-log.json` (`apply_status: moved | failed | delete_failed`), which serves as a permanent audit trail. Use `--report apply.csv` to export results.
+
+### Safety Notes
+
+- `HIGH_RISK` items are always reviewed individually — they are never included in a batch decision.
+- Every `(p)rotect` decision appends the item's path pattern to `protected-paths.json`, so it is automatically guarded in all future scans.
+- A copy is fully verified before the source is deleted. If verification fails, the partial copy is removed and the source is left untouched.
+- Failed copies are recorded in `triage-log.json` with `apply_status: failed`. The source file is never deleted on a failed or unverified copy.
+
+---
+
 ## Repository Structure
 
 ```
