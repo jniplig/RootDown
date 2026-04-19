@@ -1,63 +1,130 @@
 # RootDown
 
-A platform-agnostic, single-script deployable file organization standard. Works on Windows, macOS, Linux, and WSL. Supports single-user and multi-user/multi-machine deployments via a profile system.
+RootDown is a platform-agnostic file organization standard with a Python deployer and auditor. It defines a canonical folder structure, reads it from a JSON manifest, and creates it on any machine — Windows, macOS, or Linux/WSL — with a single command. A profile system allows per-machine and per-user overrides without modifying the standard itself.
 
-## Architecture
+---
 
-| Layer | File | Purpose |
-|-------|------|---------|
-| Standard | `standard/organization-standard.json` | Canonical folder structure — no platform assumptions |
-| Deployer | `deploy.py` | Single entry point; detects platform, reads standard, creates structure |
-| Profiles | `profiles/*.json` | Per-user or per-machine overrides (root path, exclusions, extras) |
-| Auditor | `audit.py` | Drift detection; compares deployed structure against standard, reports only |
+## The Standard
 
-## Folder Standard
+The canonical data root is `C:\Data` on Windows and `~/Data` on macOS and Linux. All organized material lives under this root.
 
-The canonical data root contains the following top-level structure:
+| Folder | Purpose |
+|--------|---------|
+| `00_INBOX` | Landing zone for unsorted or newly captured material awaiting review and placement |
+| `10_PROJECTS` | Active and completed project work, organized using the standard project template |
+| `20_OPERATIONS` | Reusable business, administrative, and operational materials that are not project-specific |
+| `25_PERSONAL` | Personal records, household administration, and structured personal information |
+| `30_MEDIA` | Photos, videos, audio, graphics, and other media-first assets |
+| `40_REFERENCE` | Manuals, guides, knowledge resources, and non-active reference content |
+| `50_SYSTEM` | Scripts, exports, drivers, installers, configuration files, and system support material |
+| `90_ARCHIVE` | Inactive or historical material retained for recordkeeping and long-term storage |
 
-```
-<root>/
-├── 00_INBOX
-├── 10_PROJECTS
-├── 20_OPERATIONS
-├── 25_PERSONAL
-├── 30_MEDIA
-├── 40_REFERENCE
-├── 50_SYSTEM
-└── 90_ARCHIVE
-```
+The full standard including subfolders, lifecycle policies, and naming conventions is defined in `standard/organization-standard.json`.
 
-The default root is platform-detected (`C:\Data` on Windows, `~/Data` on macOS/Linux). Profiles can override this per machine.
+---
 
-## Usage
+## Quick Start
 
 ```bash
-# Deploy the standard folder structure
-python deploy.py
-
-# Deploy with a specific profile
-python deploy.py --profile workstation
-
-# Preview without writing anything
-python deploy.py --dry-run
-
-# Audit an existing deployment for drift
-python audit.py
-
-# Audit and write a report
-python audit.py --report audit-report.csv
+git clone https://github.com/jniplig/RootDown.git
+cd RootDown
 ```
+
+Preview what will be created (dry run is on by default):
+
+```bash
+python deploy.py
+```
+
+Deploy with a specific profile:
+
+```bash
+python deploy.py --profile profiles/profile-personal.json
+```
+
+Write the structure to disk:
+
+```bash
+python deploy.py --no-dry-run
+python deploy.py --profile profiles/profile-personal.json --no-dry-run
+```
+
+---
 
 ## Profiles
 
-Place profile JSON files in `profiles/`. A profile is selected by name (`--profile <name>`) or by hostname auto-detection. Profiles can override the root path, add machine-specific folders, or exclude standard folders not relevant to that machine.
+A profile is a JSON file that customizes a deployment without changing the standard. Use a profile to:
 
-## Safety
+- Override the data root path for a specific machine
+- Add folders that are not in the universal standard (e.g. `09_Personal_Projects` under `25_PERSONAL`)
+- Adjust lifecycle policies per folder
 
-- `deploy.py` never deletes or overwrites existing content
-- `audit.py` is strictly read-only — it never moves, renames, or deletes anything
-- All operations default to reporting intent before writing; use `--dry-run` to preview
+Start from the template:
 
-## Legacy
+```bash
+cp profiles/profile-template.json profiles/profile-mymachine.json
+```
 
-The original machine-specific Windows/PowerShell migration scripts are preserved in `legacy/` for reference. They are not part of the current architecture.
+Edit `profile_name`, `machine`, `owner`, and any overrides, then pass it to the deployer:
+
+```bash
+python deploy.py --profile profiles/profile-mymachine.json
+```
+
+---
+
+## Audit
+
+`audit.py` checks an existing deployment against the standard and reports drift. It never modifies anything on disk.
+
+```bash
+# Summary to console
+python audit.py
+
+# Verbose — print every finding
+python audit.py --verbose
+
+# Write a CSV report
+python audit.py --report audit.csv
+
+# Audit with a specific profile
+python audit.py --profile profiles/profile-personal.json --report audit.csv
+```
+
+Findings are classified as:
+
+| Classification | Meaning |
+|---------------|---------|
+| `OK` | Folder exists and is accounted for in the standard or profile |
+| `MISSING` | A required standard folder does not exist on disk |
+| `UNKNOWN` | A folder exists on disk but is not in the standard or profile |
+| `INBOX_AGE` | A file in `00_INBOX` exceeds the lifecycle review age |
+
+---
+
+## Repository Structure
+
+```
+RootDown/
+├── deploy.py                          # Deployer — creates folder structure on any platform
+├── audit.py                           # Auditor — drift detection and reporting
+├── standard/
+│   └── organization-standard.json    # Canonical folder manifest (source of truth)
+├── profiles/
+│   ├── profile-template.json         # Blank starting point for new profiles
+│   └── profile-personal.json         # Single-user profile with personal project folder
+├── lib/
+│   └── common.py                     # Shared utilities (load_json, resolve_data_root)
+├── docs/                             # Extended documentation and migration records
+└── legacy/                           # Original machine-specific scripts (reference only)
+```
+
+---
+
+## Design Principles
+
+- **Safe by default.** The deployer runs in dry-run mode unless `--no-dry-run` is explicitly passed. The auditor never writes, moves, or deletes anything.
+- **Manifest-driven.** The folder standard lives in a single JSON file. The deployer and auditor read from it — there is no logic that hardcodes folder names.
+- **Platform-agnostic.** Platform detection is automatic. The data root resolves to `C:\Data` on Windows and `~/Data` elsewhere, or to whatever the profile specifies.
+- **Profile-scoped customization.** Machine-specific or user-specific variations belong in profiles, not in the standard. The standard stays universal.
+- **Non-destructive.** The deployer skips folders that already exist. The auditor reports findings without taking action. No existing content is ever modified.

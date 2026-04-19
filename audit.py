@@ -17,7 +17,7 @@ import csv
 import datetime
 from pathlib import Path
 
-from lib.common import load_json, resolve_data_root
+from lib.common import load_json, resolve_data_root, validate_data_root
 
 STANDARD_PATH = Path(__file__).parent / "standard" / "organization-standard.json"
 DEFAULT_PROFILE = Path(__file__).parent / "profiles" / "profile-template.json"
@@ -116,10 +116,11 @@ def main() -> None:
                         help="Print all findings to console")
     args = parser.parse_args()
 
-    standard = load_json(STANDARD_PATH)
-    profile = load_json(args.profile)
+    standard = load_json(STANDARD_PATH, "standard file")
+    profile = load_json(args.profile, "profile")
 
     data_root = resolve_data_root(profile)
+    validate_data_root(data_root)
     folders = standard["folders"]
 
     if profile.get("folder_additions"):

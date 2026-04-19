@@ -11,7 +11,7 @@ Usage:
 import argparse
 from pathlib import Path
 
-from lib.common import load_json, resolve_data_root
+from lib.common import die, load_json, resolve_data_root, validate_data_root
 
 STANDARD_PATH = Path(__file__).parent / "standard" / "organization-standard.json"
 DEFAULT_PROFILE = Path(__file__).parent / "profiles" / "profile-template.json"
@@ -52,7 +52,10 @@ def deploy(root: Path, folders: list, dry_run: bool) -> None:
         elif path.exists():
             print(f"[EXISTS]  {path}")
         else:
-            path.mkdir(parents=True, exist_ok=True)
+            try:
+                path.mkdir(parents=True, exist_ok=True)
+            except PermissionError:
+                die(f"permission denied creating folder: {path}")
             print(f"[CREATED] {path}")
         if folder.get("subfolders"):
             deploy(path, folder["subfolders"], dry_run)
@@ -66,10 +69,11 @@ def main() -> None:
                         help="Preview without writing (default: on). Use --no-dry-run to write.")
     args = parser.parse_args()
 
-    standard = load_json(STANDARD_PATH)
-    profile = load_json(args.profile)
+    standard = load_json(STANDARD_PATH, "standard file")
+    profile = load_json(args.profile, "profile")
 
     data_root = resolve_data_root(profile)
+    validate_data_root(data_root)
     folders = standard["folders"]
 
     if profile.get("folder_additions"):
