@@ -1,12 +1,10 @@
-# GMKTec K6 File Organization Standard
+# RootDown File Organization Standard
 
 ## 1. Purpose
 
-This standard defines the canonical file organization model for the GMKTec K6 environment. Its purpose is to create a consistent, reviewable structure for active work, operational material, personal records, media, reference content, system assets, and archival storage.
+This standard defines the canonical file organization model for any target machine. Its purpose is to create a consistent, reviewable structure for active work, operational material, personal records, media, reference content, system assets, and archival storage.
 
-The standard applies to the primary organized data root:
-
-`C:\Data`
+The standard applies to the primary organized data root configured for the target machine.
 
 This document defines:
 
@@ -19,15 +17,13 @@ This document defines:
 
 ## 2. Canonical Root
 
-The canonical managed root path is:
-
-`C:\Data`
+The canonical managed root path is the data root configured for the target machine (e.g. `C:\Data` on Windows, `~/Data` on macOS/Linux).
 
 All organized material governed by this standard should live within that root unless a specific operational exception is documented.
 
 ## 3. Required Top-Level Folders
 
-The top-level folders under `C:\Data` must be exactly:
+The top-level folders under the data root must be exactly:
 
 - `00_INBOX`
   Initial landing zone for unsorted or newly captured material awaiting review and placement.
@@ -48,7 +44,7 @@ The top-level folders under `C:\Data` must be exactly:
 
 ## 4. Standard Personal Records Structure
 
-The folder `C:\Data\25_PERSONAL` must contain these subfolders:
+The folder `25_PERSONAL` must contain these subfolders:
 
 - `01_Family`
   Family records, household member information, school or dependent-related documents, and family coordination materials.
@@ -73,7 +69,7 @@ The folder `C:\Data\25_PERSONAL` must contain these subfolders:
 
 ## 5. Standard Per-Project Subfolder Model
 
-Each project stored under `C:\Data\10_PROJECTS` should use the following standard subfolder structure:
+Each project stored under `10_PROJECTS` should use the following standard subfolder structure:
 
 - `01_ADMIN`
   Planning notes, contracts, schedules, approvals, and project administration.
@@ -118,7 +114,7 @@ Approved `Area` values are:
 - `2026-04-07_Teaching_Course-outline_Module-01_v01.docx`
 - `2026-04-07_InsightEdu_Client-brief_Site-audit_v01.pdf`
 - `2026-04-07_Studio_Podcast-episode_Rough-cut_v01.wav`
-- `2026-04-07_Systems_Device-inventory_GMKTec-K6_v01.xlsx`
+- `2026-04-07_Systems_Device-inventory_Target-machine_v01.xlsx`
 - `2026-04-07_Personal_Insurance-policy_Renewal-summary_v01.pdf`
 
 ## 7. Tag Guidance

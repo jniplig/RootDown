@@ -2,11 +2,11 @@
 
 ## Purpose
 
-This checklist explains how to connect the local `k6-organization` repository to a GitHub remote and push the existing `main` branch.
+This checklist explains how to connect the local `RootDown` repository to a GitHub remote and push the existing `main` branch.
 
 Assumptions:
 
-- the local repository already exists at `C:\Users\jnipl\projects\k6-organization`
+- the local repository already exists at `<local-path>/RootDown`
 - the repository already has committed work on `main`
 - no Git remotes are currently configured
 
@@ -14,8 +14,8 @@ Assumptions:
 
 Suggested GitHub repository names:
 
-- `k6-organization`
-- `k6-system-organization`
+- `RootDown`
+- `rootdown`
 
 ## Before Publishing
 

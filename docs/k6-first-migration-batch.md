@@ -1,8 +1,8 @@
-# K6 First Migration Batch
+# First Migration Batch
 
 ## Purpose
 
-This document defines the first safe migration batch for the K6 organization rollout based on the latest audit results.
+This document defines the first safe migration batch for the RootDown rollout based on the latest audit results.
 
 The audit is now good enough to support guided manual migration. It is not yet suitable for blind automated moves.
 
@@ -26,14 +26,14 @@ Do not try to clear the entire source tree in one pass. Migrate only folders and
 
 ## Example Destination Paths
 
-Use paths like these under `C:\Data`:
+Use paths like these under `the data root`:
 
-- `PowerShell` -> `C:\Data\50_SYSTEM\PowerShell`
-- `WindowsPowerShell` -> `C:\Data\50_SYSTEM\WindowsPowerShell`
-- `Blackmagic Design` -> `C:\Data\50_SYSTEM\Blackmagic-Design`
-- `ATEM Autosave` -> `C:\Data\50_SYSTEM\ATEM\Autosave`
-- `WinBox_Windows` -> `C:\Data\50_SYSTEM\WinBox\Windows`
-- Music files from `Downloads` -> `C:\Data\30_MEDIA\Audio`
+- `PowerShell` -> `the data root\50_SYSTEM\PowerShell`
+- `WindowsPowerShell` -> `the data root\50_SYSTEM\WindowsPowerShell`
+- `Blackmagic Design` -> `the data root\50_SYSTEM\Blackmagic-Design`
+- `ATEM Autosave` -> `the data root\50_SYSTEM\ATEM\Autosave`
+- `WinBox_Windows` -> `the data root\50_SYSTEM\WinBox\Windows`
+- Music files from `Downloads` -> `the data root\30_MEDIA\Audio`
 
 Adjust the final destination slightly if the contents justify a more specific subfolder, but keep the top-level category consistent with the standard.
 
@@ -58,4 +58,4 @@ Before moving any folder:
 
 ## Working Rule
 
-If a folder is clearly identifiable and low-risk, migrate it manually into the correct `C:\Data` destination. If it is ambiguous, application-managed, compressed, or currently routed to `00_INBOX`, leave it for a later review batch.
+If a folder is clearly identifiable and low-risk, migrate it manually into the correct `the data root` destination. If it is ambiguous, application-managed, compressed, or currently routed to `00_INBOX`, leave it for a later review batch.

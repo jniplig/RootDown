@@ -1,0 +1,20 @@
+{
+  "metadata": {
+    "profile_name": "personal",
+    "machine": "",
+    "owner": "",
+    "created": "2026-04-19",
+    "description": "Single-user personal deployment. Adds 09_Personal_Projects under 25_PERSONAL for users who want a dedicated space for personal initiatives separate from professional projects."
+  },
+  "data_root": null,
+  "optional_folders": [],
+  "folder_additions": [
+    {
+      "parent": "25_PERSONAL",
+      "key": "09_Personal_Projects",
+      "display_name": "Personal Projects",
+      "purpose": "Personal initiatives and structured work that are not business projects but still benefit from deliberate organization."
+    }
+  ],
+  "folder_overrides": []
+}

@@ -60,4 +60,4 @@ Place profile JSON files in `profiles/`. A profile is selected by name (`--profi
 
 ## Legacy
 
-The original K6-specific Windows/PowerShell migration scripts are preserved in `scripts/legacy/` for reference. They are not part of the current architecture.
+The original machine-specific Windows/PowerShell migration scripts are preserved in `legacy/` for reference. They are not part of the current architecture.

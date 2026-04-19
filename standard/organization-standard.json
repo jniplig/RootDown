@@ -1,0 +1,155 @@
+{
+  "schema_version": "1.0.0",
+  "data_root": "data_root",
+  "folders": [
+    {
+      "key": "00_INBOX",
+      "display_name": "Inbox",
+      "purpose": "Initial landing zone for unsorted or newly captured material awaiting review and placement.",
+      "required": true,
+      "lifecycle": {
+        "policy": "review",
+        "review_after_days": 7
+      },
+      "subfolders": []
+    },
+    {
+      "key": "10_PROJECTS",
+      "display_name": "Projects",
+      "purpose": "Active and completed project work organized using the standard project template.",
+      "required": true,
+      "lifecycle": {
+        "policy": "permanent",
+        "review_after_days": null
+      },
+      "subfolders": [
+        {
+          "key": "_TEMPLATE_PROJECT",
+          "display_name": "Template Project",
+          "purpose": "Reusable starting point for new projects. Duplicate this folder when creating a new project.",
+          "required": true,
+          "subfolders": [
+            { "key": "01_ADMIN",     "display_name": "Admin",     "purpose": "Planning notes, contracts, schedules, approvals, and project administration." },
+            { "key": "02_SOURCE",    "display_name": "Source",    "purpose": "Original source material, inputs, code, raw captures, or received assets." },
+            { "key": "03_WORKING",   "display_name": "Working",   "purpose": "Drafts, work-in-progress files, intermediate analysis, and active development material." },
+            { "key": "04_OUTPUT",    "display_name": "Output",    "purpose": "Deliverables, exports, presentations, published files, and handoff-ready outputs." },
+            { "key": "05_REFERENCE", "display_name": "Reference", "purpose": "Project-specific reference documents, requirements, manuals, and supporting research." },
+            { "key": "99_ARCHIVE",   "display_name": "Archive",   "purpose": "Historical iterations, retired material, superseded outputs, and no-longer-active project content." }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "20_OPERATIONS",
+      "display_name": "Operations",
+      "purpose": "Reusable business, administrative, process, and operational materials that are not project-specific.",
+      "required": true,
+      "lifecycle": {
+        "policy": "permanent",
+        "review_after_days": null
+      },
+      "subfolders": []
+    },
+    {
+      "key": "25_PERSONAL",
+      "display_name": "Personal",
+      "purpose": "Personal records, household administration, and non-business structured personal information.",
+      "required": true,
+      "lifecycle": {
+        "policy": "permanent",
+        "review_after_days": null
+      },
+      "subfolders": [
+        { "key": "01_Family",                 "display_name": "Family",                 "purpose": "Family records, household member information, school or dependent-related documents, and family coordination materials." },
+        { "key": "02_Finance",                "display_name": "Finance",                "purpose": "Banking, taxes, budgets, statements, insurance finance records, and other personal financial administration." },
+        { "key": "03_Property",               "display_name": "Property",               "purpose": "Property ownership, leases, utilities, maintenance documentation, and asset-related records for homes or other property." },
+        { "key": "04_Travel",                 "display_name": "Travel",                 "purpose": "Bookings, itineraries, visa support material, travel confirmations, and trip planning records." },
+        { "key": "05_Health_Admin",           "display_name": "Health Admin",           "purpose": "Appointments, administrative health records, coverage records, and non-clinical medical administration." },
+        { "key": "06_Legal_and_ID",           "display_name": "Legal and ID",           "purpose": "Identity documents, licenses, legal paperwork, government records, and formal personal documentation." },
+        { "key": "07_Personal_Admin",         "display_name": "Personal Admin",         "purpose": "General life administration that does not fit a more specific personal category." },
+        { "key": "08_Warranties_and_Receipts","display_name": "Warranties and Receipts","purpose": "Purchase records, receipts, service confirmations, warranties, and proof-of-purchase material." },
+        { "key": "99_Archive",                "display_name": "Archive",                "purpose": "Historical personal records kept for retention but no longer active." }
+      ]
+    },
+    {
+      "key": "30_MEDIA",
+      "display_name": "Media",
+      "purpose": "Photos, videos, audio, graphics, and other media-first assets.",
+      "required": true,
+      "lifecycle": {
+        "policy": "permanent",
+        "review_after_days": null
+      },
+      "subfolders": []
+    },
+    {
+      "key": "40_REFERENCE",
+      "display_name": "Reference",
+      "purpose": "Manuals, guides, knowledge resources, research materials, and non-active reference content.",
+      "required": true,
+      "lifecycle": {
+        "policy": "permanent",
+        "review_after_days": null
+      },
+      "subfolders": []
+    },
+    {
+      "key": "50_SYSTEM",
+      "display_name": "System",
+      "purpose": "Scripts, exports, drivers, inventories, configuration files, installers, and technical system support material.",
+      "required": true,
+      "lifecycle": {
+        "policy": "permanent",
+        "review_after_days": null
+      },
+      "subfolders": []
+    },
+    {
+      "key": "90_ARCHIVE",
+      "display_name": "Archive",
+      "purpose": "Inactive or historical material retained for recordkeeping, traceability, or long-term storage.",
+      "required": true,
+      "lifecycle": {
+        "policy": "permanent",
+        "review_after_days": null
+      },
+      "subfolders": []
+    }
+  ],
+  "naming_convention": {
+    "pattern": "YYYY-MM-DD_Area_Item_Descriptor_v##.ext",
+    "date_format": "ISO 8601 (YYYY-MM-DD)",
+    "segment_separator": "_",
+    "word_separator": "-",
+    "version_format": "v## (e.g. v01, v02, v03)",
+    "approved_areas": [
+      "Teaching",
+      "InsightEdu",
+      "Studio",
+      "Systems",
+      "Personal"
+    ],
+    "rules": [
+      "Use ISO date format: YYYY-MM-DD.",
+      "Use underscores between pattern segments.",
+      "Use hyphens inside multi-word segments.",
+      "Do not use vague suffixes such as 'final', 'latest', or 'new'.",
+      "Increment version numbers explicitly: v01, v02, v03.",
+      "Prefer stable business meaning over temporary workflow language.",
+      "Preserve meaningful, concise nouns in Item and Descriptor segments."
+    ],
+    "examples": [
+      "2026-04-07_Teaching_Course-outline_Module-01_v01.docx",
+      "2026-04-07_InsightEdu_Client-brief_Site-audit_v01.pdf",
+      "2026-04-07_Studio_Podcast-episode_Rough-cut_v01.wav",
+      "2026-04-07_Systems_Device-inventory_Target-machine_v01.xlsx",
+      "2026-04-07_Personal_Insurance-policy_Renewal-summary_v01.pdf"
+    ]
+  },
+  "metadata": {
+    "author": "jniplig",
+    "version": "1.0.0",
+    "last_updated": "2026-04-19",
+    "description": "Canonical folder organization standard for RootDown. Platform-agnostic. No hardcoded paths."
+  }
+}
