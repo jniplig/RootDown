@@ -1,0 +1,89 @@
+{
+  "protected_paths": [
+    {
+      "path_pattern": "**/AppData/**",
+      "reason": "Windows user application data — app-managed, do not migrate",
+      "auto_protect": true
+    },
+    {
+      "path_pattern": "**/Application Data/**",
+      "reason": "Windows legacy application data — app-managed, do not migrate",
+      "auto_protect": true
+    },
+    {
+      "path_pattern": "**/.config/**",
+      "reason": "Linux/macOS user config directory — app-managed, do not migrate",
+      "auto_protect": true
+    },
+    {
+      "path_pattern": "**/.cache/**",
+      "reason": "Linux/macOS user cache — transient, do not migrate",
+      "auto_protect": true
+    },
+    {
+      "path_pattern": "**/Cache/**",
+      "reason": "Application cache directory — transient, do not migrate",
+      "auto_protect": true
+    },
+    {
+      "path_pattern": "**/cache/**",
+      "reason": "Application cache directory — transient, do not migrate",
+      "auto_protect": true
+    },
+    {
+      "path_pattern": "**/.local/share/**",
+      "reason": "Linux user local share — app-managed, do not migrate",
+      "auto_protect": true
+    },
+    {
+      "path_pattern": "**/node_modules/**",
+      "reason": "Node.js package directory — generated, do not migrate",
+      "auto_protect": true
+    },
+    {
+      "path_pattern": "**/.git/**",
+      "reason": "Git repository internals — do not migrate",
+      "auto_protect": true
+    },
+    {
+      "path_pattern": "**/__pycache__/**",
+      "reason": "Python bytecode cache — generated, do not migrate",
+      "auto_protect": true
+    },
+    {
+      "path_pattern": "**/.venv/**",
+      "reason": "Python virtual environment — generated, do not migrate",
+      "auto_protect": true
+    },
+    {
+      "path_pattern": "**/site-packages/**",
+      "reason": "Python installed packages — generated, do not migrate",
+      "auto_protect": true
+    },
+    {
+      "path_pattern": "**/.ssh/**",
+      "reason": "Shell or system dotfile — app or OS managed",
+      "auto_protect": true
+    },
+    {
+      "path_pattern": "**/.gnupg/**",
+      "reason": "Shell or system dotfile — app or OS managed",
+      "auto_protect": true
+    },
+    {
+      "path_pattern": "**/.gitconfig",
+      "reason": "Shell or system dotfile — app or OS managed",
+      "auto_protect": true
+    },
+    {
+      "path_pattern": "**/.*rc",
+      "reason": "Shell or system dotfile — app or OS managed",
+      "auto_protect": true
+    },
+    {
+      "path_pattern": "**/.*_history",
+      "reason": "Shell or system dotfile — app or OS managed",
+      "auto_protect": true
+    }
+  ]
+}
