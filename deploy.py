@@ -9,25 +9,12 @@ Usage:
 """
 
 import argparse
-import json
-import platform
 from pathlib import Path
+
+from lib.common import load_json, resolve_data_root
 
 STANDARD_PATH = Path(__file__).parent / "standard" / "organization-standard.json"
 DEFAULT_PROFILE = Path(__file__).parent / "profiles" / "profile-template.json"
-
-
-def resolve_data_root(profile: dict) -> Path:
-    if profile.get("data_root"):
-        return Path(profile["data_root"])
-    if platform.system() == "Windows":
-        return Path(r"C:\Data")
-    return Path.home() / "Data"
-
-
-def load_json(path: Path) -> dict:
-    with open(path) as f:
-        return json.load(f)
 
 
 def apply_folder_additions(folders: list, additions: list) -> None:
