@@ -1,9 +1,10 @@
 """
-RootDown migrator — stage 1 scan + stage 2 interactive triage.
+RootDown migrator — stage 1 scan, stage 2 interactive triage, stage 3 apply.
 
 Stage 1: scan a source root, classify risk, suggest destinations.
 Stage 2: interactive triage — decide move / skip / protect / defer per item.
          Decisions are written to triage-log.json for the stage 3 apply pass.
+Stage 3: apply — read triage-log.json, copy-verify-delete all "move" items.
 
 Usage:
     python migrate.py                                 # scan + triage
@@ -11,6 +12,8 @@ Usage:
     python migrate.py --dry-run                       # show UI, no writes
     python migrate.py --no-triage --report out.csv    # scan only
     python migrate.py --triage-log custom-log.json
+    python migrate.py --apply                         # execute the move plan
+    python migrate.py --apply --report apply.csv      # apply + write CSV
 """
 
 import argparse
@@ -18,6 +21,7 @@ import csv
 import datetime
 import json
 import re
+import shutil
 from collections import defaultdict
 from pathlib import Path
 
@@ -381,6 +385,153 @@ def format_line(item: Path, tier: str, suggested: str, confidence: str) -> str:
     return f"[{tier:<9}] {item}  →  {suggested}  ({confidence})"
 
 
+# ── Apply pass ──────────────────────────────────────────────────────────────
+
+def resolve_destination(suggested: str, data_root: Path) -> Path:
+    return data_root / Path(suggested)
+
+
+def safe_dest_path(dest_dir: Path, name: str) -> Path:
+    stem   = Path(name).stem
+    suffix = Path(name).suffix
+    candidate = dest_dir / name
+    n = 1
+    while candidate.exists():
+        candidate = dest_dir / f"{stem}_{n}{suffix}"
+        n += 1
+    return candidate
+
+
+def verify_file(src: Path, dst: Path) -> bool:
+    try:
+        ss, ds = src.stat(), dst.stat()
+        return ss.st_size == ds.st_size and ss.st_mtime == ds.st_mtime
+    except OSError:
+        return False
+
+
+def _count_files(path: Path) -> int:
+    try:
+        return sum(1 for f in path.rglob("*") if f.is_file())
+    except OSError:
+        return -1
+
+
+def verify_dir(src: Path, dst: Path) -> bool:
+    sc = _count_files(src)
+    dc = _count_files(dst)
+    return sc >= 0 and sc == dc
+
+
+def run_apply(session: dict, triage_log: Path, data_root: Path,
+              report_path: Path | None) -> None:
+    items   = session["items"]
+    to_move = [(p, e) for p, e in items.items() if e.get("decision") == "move"]
+
+    if not to_move:
+        print("[INFO]  No items with decision 'move' in triage log.")
+        return
+
+    total_size = sum(get_size(Path(p)) for p, _ in to_move)
+    print(f"Items to move  : {len(to_move)}")
+    print(f"Total size     : {format_size(total_size)}")
+    print()
+    print("Type CONFIRM to proceed, or anything else to abort:")
+    try:
+        response = input("  > ").strip()
+    except (EOFError, KeyboardInterrupt):
+        print()
+        print("[ABORTED]")
+        return
+
+    if response != "CONFIRM":
+        print("[ABORTED]")
+        return
+
+    print()
+    counts = {"moved": 0, "failed": 0, "delete_failed": 0}
+
+    for path_str, entry in to_move:
+        src      = Path(path_str)
+        dest_dir = resolve_destination(entry["suggested"], data_root)
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        final    = safe_dest_path(dest_dir, src.name)
+
+        # Copy
+        try:
+            if src.is_file():
+                shutil.copy2(src, final)
+                ok = verify_file(src, final)
+            elif src.is_dir():
+                shutil.copytree(src, final)
+                ok = verify_dir(src, final)
+            else:
+                raise OSError("not a regular file or directory")
+        except Exception as exc:
+            print(f"[FAILED]        {shorten(src)}  — {exc}")
+            entry.update(applied=False, apply_status="failed",
+                         applied_timestamp=now_iso())
+            save_session(session, triage_log, dry_run=False)
+            counts["failed"] += 1
+            continue
+
+        if not ok:
+            print(f"[FAILED]        {shorten(src)}  — verification mismatch")
+            try:
+                shutil.rmtree(final) if final.is_dir() else final.unlink()
+            except OSError:
+                pass
+            entry.update(applied=False, apply_status="failed",
+                         applied_timestamp=now_iso())
+            save_session(session, triage_log, dry_run=False)
+            counts["failed"] += 1
+            continue
+
+        # Delete source
+        try:
+            shutil.rmtree(src) if src.is_dir() else src.unlink()
+            print(f"[MOVED]         {shorten(src)}  →  {shorten(final)}")
+            entry.update(applied=True, destination=str(final),
+                         apply_status="moved", applied_timestamp=now_iso())
+            counts["moved"] += 1
+        except Exception as exc:
+            print(f"[DELETE_FAILED]  {shorten(src)}  — copy ok, delete failed: {exc}")
+            entry.update(applied=True, destination=str(final),
+                         apply_status="delete_failed", applied_timestamp=now_iso())
+            counts["delete_failed"] += 1
+
+        save_session(session, triage_log, dry_run=False)
+
+    print()
+    print("=" * 52)
+    print("Apply Summary")
+    print("=" * 52)
+    print(f"  Moved         : {counts['moved']}")
+    print(f"  Failed        : {counts['failed']}")
+    print(f"  Delete failed : {counts['delete_failed']}")
+    print()
+
+    if report_path:
+        with open(report_path, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=[
+                "path", "tier", "decision", "suggested",
+                "apply_status", "destination", "applied_timestamp",
+            ])
+            writer.writeheader()
+            for path_str, entry in items.items():
+                if entry.get("decision") == "move":
+                    writer.writerow({
+                        "path":              path_str,
+                        "tier":              entry.get("tier", ""),
+                        "decision":          entry.get("decision", ""),
+                        "suggested":         entry.get("suggested", ""),
+                        "apply_status":      entry.get("apply_status", ""),
+                        "destination":       entry.get("destination", ""),
+                        "applied_timestamp": entry.get("applied_timestamp", ""),
+                    })
+        print(f"Report written : {report_path}")
+
+
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -394,9 +545,31 @@ def main() -> None:
                         help="Optional CSV report path")
     parser.add_argument("--no-triage",  action="store_true",
                         help="Scan and classify only — skip interactive triage")
-    parser.add_argument("--dry-run",    action="store_true",
-                        help="Show triage UI but do not write any state")
+    mode_group = parser.add_mutually_exclusive_group()
+    mode_group.add_argument("--dry-run", action="store_true",
+                            help="Show triage UI but do not write any state")
+    mode_group.add_argument("--apply", action="store_true",
+                            help="Execute moves from triage-log.json")
     args = parser.parse_args()
+
+    # ── Apply mode ────────────────────────────────────────────────────────────
+    if args.apply:
+        if not args.triage_log.exists():
+            die(f"triage log not found: {args.triage_log} — run triage first")
+        profile   = load_json(args.profile, "profile")
+        data_root = resolve_data_root(profile)
+        validate_data_root(data_root)
+        try:
+            with open(args.triage_log) as _f:
+                session = json.load(_f)
+        except (json.JSONDecodeError, KeyError) as exc:
+            die(f"triage log unreadable: {exc}")
+        print("RootDown migrator  [APPLY]")
+        print(f"Triage log : {args.triage_log}")
+        print(f"Data root  : {data_root}")
+        print()
+        run_apply(session, args.triage_log, data_root, args.report)
+        return
 
     standard  = load_json(STANDARD_PATH,  "standard file")
     protected = load_json(PROTECTED_PATH, "protected-paths file")
