@@ -25,28 +25,34 @@ The full standard including subfolders, lifecycle policies, and naming conventio
 
 ## Quick Start
 
-```bash
-git clone https://github.com/jniplig/RootDown.git
-cd RootDown
+**Windows:**
+```powershell
+git clone https://github.com/jniplig/rootdown.git
+cd rootdown
+.\install.ps1
 ```
 
-Preview what will be created (dry run is on by default):
-
+**macOS / Linux / WSL:**
 ```bash
-python deploy.py
+git clone https://github.com/jniplig/rootdown.git
+cd rootdown
+./install.sh
 ```
 
-Deploy with a specific profile:
-
+**With a profile:**
+```powershell
+.\install.ps1 --profile profiles/profile-personal.json
+```
 ```bash
-python deploy.py --profile profiles/profile-personal.json
+./install.sh --profile profiles/profile-personal.json
 ```
 
-Write the structure to disk:
-
+**Live deploy (writes to disk):**
+```powershell
+.\install.ps1 --no-dry-run
+```
 ```bash
-python deploy.py --no-dry-run
-python deploy.py --profile profiles/profile-personal.json --no-dry-run
+./install.sh --no-dry-run
 ```
 
 ---
