@@ -9,5 +9,6 @@
   "data_root": null,
   "optional_folders": [],
   "folder_additions": [],
-  "folder_overrides": []
+  "folder_overrides": [],
+  "symlinked_folders": []
 }

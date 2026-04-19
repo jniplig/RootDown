@@ -52,6 +52,24 @@ def _insert(folders: list, parent_key: str, addition: dict) -> bool:
     return False
 
 
+def build_symlink_map(data_root: Path, profile: dict) -> dict:
+    """Map absolute path -> declared target for profile-declared symlinks."""
+    result = {}
+    for entry in profile.get("symlinked_folders", []):
+        path = data_root / entry["key"]
+        result[path] = entry.get("target")
+    return result
+
+
+def symlink_detail(path: Path, declared_target: str | None) -> str:
+    if path.is_symlink():
+        target = path.resolve()
+        return f"symlink -> {target}" if path.exists() else f"symlink -> {target} (broken)"
+    if declared_target:
+        return f"symlink -> {declared_target} (broken)"
+    return "symlink (broken, target unknown)"
+
+
 def get_inbox_max_age(folders: list, inbox_key: str = "00_INBOX") -> int | None:
     for folder in folders:
         if folder["key"] == inbox_key:
@@ -71,18 +89,20 @@ def check_inbox_age(inbox_path: Path, max_age_days: int, findings: list) -> None
                 findings.append((item, "INBOX_AGE", f"age {age}d exceeds {max_age_days}d policy"))
 
 
-def audit(data_root: Path, folders: list, standard: dict) -> list:
+def audit(data_root: Path, folders: list, standard: dict, symlink_map: dict) -> list:
     """Return list of (path, classification, detail) tuples."""
     findings = []
     known = set()
     collect_standard_paths(data_root, folders, known)
 
-    # Check for MISSING standard folders
+    # Check standard folders — classify symlinks before missing/ok
     for path in sorted(known):
-        if not path.exists():
-            findings.append((path, "MISSING", "required folder not found on disk"))
-        else:
+        if path in symlink_map or path.is_symlink():
+            findings.append((path, "SYMLINK", symlink_detail(path, symlink_map.get(path))))
+        elif path.exists():
             findings.append((path, "OK", ""))
+        else:
+            findings.append((path, "MISSING", "required folder not found on disk"))
 
     # Check for UNKNOWN folders on disk (drift)
     if data_root.exists():
@@ -131,7 +151,8 @@ def main() -> None:
     print(f"Profile   : {args.profile}")
     print()
 
-    findings = audit(data_root, folders, standard)
+    symlink_map = build_symlink_map(data_root, profile)
+    findings = audit(data_root, folders, standard, symlink_map)
 
     counts = {}
     for _, classification, _ in findings:
@@ -147,7 +168,7 @@ def main() -> None:
 
     total = len(findings)
     print(f"Folders checked : {total}")
-    for label in ("OK", "MISSING", "UNKNOWN", "INBOX_AGE"):
+    for label in ("OK", "SYMLINK", "MISSING", "UNKNOWN", "INBOX_AGE"):
         if label in counts:
             print(f"  {label:<12}: {counts[label]}")
 
