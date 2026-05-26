@@ -3,5 +3,6 @@ __pycache__/
 mock/
 audit-report-*.csv
 migration-report-*.csv
+*_audit.csv
 *.tmp
 *.log
