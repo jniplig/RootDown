@@ -98,7 +98,7 @@ def init_session(scan_root: Path) -> dict:
 def load_or_create_session(triage_log: Path, scan_root: Path) -> dict:
     if triage_log.exists():
         try:
-            with open(triage_log) as f:
+            with open(triage_log, encoding="utf-8") as f:
                 session = json.load(f)
             print(f"[INFO]  Resuming session: {triage_log}")
             return session
@@ -111,8 +111,8 @@ def save_session(session: dict, path: Path, dry_run: bool) -> None:
     if dry_run:
         return
     session["session_updated"] = now_iso()
-    with open(path, "w") as f:
-        json.dump(session, f, indent=2)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(session, f, indent=2, ensure_ascii=False)
 
 
 def merge_scan(session: dict, scan_results: list) -> None:
@@ -236,8 +236,8 @@ def append_protected(path: Path, dry_run: bool) -> None:
         "reason":       "User-protected during triage",
         "auto_protect": False,
     })
-    with open(PROTECTED_PATH, "w") as f:
-        json.dump(protected, f, indent=2)
+    with open(PROTECTED_PATH, "w", encoding="utf-8") as f:
+        json.dump(protected, f, indent=2, ensure_ascii=False)
 
 
 # ── Triage loop ─────────────────────────────────────────────────────────────
@@ -512,7 +512,7 @@ def run_apply(session: dict, triage_log: Path, data_root: Path,
     print()
 
     if report_path:
-        with open(report_path, "w", newline="") as f:
+        with open(report_path, "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=[
                 "path", "tier", "decision", "suggested",
                 "apply_status", "destination", "applied_timestamp",
@@ -560,7 +560,7 @@ def main() -> None:
         data_root = resolve_data_root(profile)
         validate_data_root(data_root)
         try:
-            with open(args.triage_log) as _f:
+            with open(args.triage_log, encoding="utf-8") as _f:
                 session = json.load(_f)
         except (json.JSONDecodeError, KeyError) as exc:
             die(f"triage log unreadable: {exc}")
@@ -612,7 +612,7 @@ def main() -> None:
 
     if args.no_triage:
         if args.report:
-            with open(args.report, "w", newline="") as f:
+            with open(args.report, "w", newline="", encoding="utf-8") as f:
                 writer = csv.DictWriter(f, fieldnames=[
                     "path", "tier", "reason", "suggested",
                     "confidence", "suggestion_reason", "decision",
@@ -650,7 +650,7 @@ def main() -> None:
     print_summary(session)
 
     if args.report:
-        with open(args.report, "w", newline="") as f:
+        with open(args.report, "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=[
                 "path", "tier", "decision", "suggested", "confidence", "timestamp",
             ])

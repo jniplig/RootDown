@@ -147,7 +147,7 @@ def audit(data_root: Path, folders: list, standard: dict, symlink_map: dict,
 
 
 def write_report(path: Path, findings: list) -> None:
-    with open(path, "w", newline="") as f:
+    with open(path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["path", "classification", "detail"])
         for folder_path, classification, detail in findings:

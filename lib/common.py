@@ -13,7 +13,7 @@ def die(message: str) -> None:
 
 def load_json(path: Path, label: str) -> dict:
     try:
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             return json.load(f)
     except FileNotFoundError:
         die(f"{label} not found: {path}")
