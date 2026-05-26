@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "profile_name": "asus",
+    "machine": "",
+    "owner": "",
+    "created": "2026-05-26",
+    "description": "ASUS machine deployment. Declares known projects under 10_PROJECTS so they are classified as OK rather than UNKNOWN."
+  },
+  "data_root": null,
+  "optional_folders": [],
+  "folder_additions": [
+    {
+      "parent": "10_PROJECTS",
+      "key": "InsightEdu-Vocab",
+      "display_name": "InsightEdu-Vocab",
+      "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "Operations-Hub",
+      "display_name": "Operations-Hub",
+      "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "rootdown",
+      "display_name": "rootdown",
+      "purpose": ""
+    }
+  ],
+  "folder_overrides": [],
+  "symlinked_folders": []
+}
