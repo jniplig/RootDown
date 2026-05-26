@@ -15,6 +15,7 @@ Usage:
 import argparse
 import csv
 import datetime
+import os
 from pathlib import Path
 
 from lib.common import load_json, resolve_data_root, validate_data_root
@@ -106,8 +107,13 @@ def audit(data_root: Path, folders: list, standard: dict, symlink_map: dict) -> 
 
     # Check for UNKNOWN folders on disk (drift)
     if data_root.exists():
-        for item in sorted(data_root.rglob("*")):
-            if item.is_dir() and item not in known:
+        discovered_dirs = []
+        for dirpath, dirnames, _ in os.walk(data_root):
+            dirnames[:] = [d for d in dirnames if d != ".git"]
+            for d in dirnames:
+                discovered_dirs.append(Path(dirpath) / d)
+        for item in sorted(discovered_dirs):
+            if item not in known:
                 findings.append((item, "UNKNOWN", "not in standard or profile"))
 
     # Check INBOX_AGE
