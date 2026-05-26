@@ -38,6 +38,25 @@ def apply_folder_additions(folders: list, additions: list) -> None:
         _insert(folders, addition["parent"], addition)
 
 
+def collect_addition_paths(root: Path, folders: list, additions: list) -> set:
+    """Return absolute paths of folder_additions within the merged folders tree."""
+    keys_by_parent: dict = {}
+    for a in additions:
+        keys_by_parent.setdefault(a["parent"], set()).add(a["key"])
+    paths: set = set()
+
+    def walk(curr_root: Path, items: list, parent_key) -> None:
+        for folder in items:
+            path = curr_root / folder["key"]
+            if parent_key in keys_by_parent and folder["key"] in keys_by_parent[parent_key]:
+                paths.add(path)
+            if folder.get("subfolders"):
+                walk(path, folder["subfolders"], folder["key"])
+
+    walk(root, folders, None)
+    return paths
+
+
 def _insert(folders: list, parent_key: str, addition: dict) -> bool:
     for folder in folders:
         if folder["key"] == parent_key:
@@ -90,7 +109,8 @@ def check_inbox_age(inbox_path: Path, max_age_days: int, findings: list) -> None
                 findings.append((item, "INBOX_AGE", f"age {age}d exceeds {max_age_days}d policy"))
 
 
-def audit(data_root: Path, folders: list, standard: dict, symlink_map: dict) -> list:
+def audit(data_root: Path, folders: list, standard: dict, symlink_map: dict,
+          skip_paths: set | None = None) -> list:
     """Return list of (path, classification, detail) tuples."""
     findings = []
     known = set()
@@ -112,6 +132,8 @@ def audit(data_root: Path, folders: list, standard: dict, symlink_map: dict) -> 
             dirnames[:] = [d for d in dirnames if d != ".git"]
             for d in dirnames:
                 discovered_dirs.append(Path(dirpath) / d)
+            if skip_paths:
+                dirnames[:] = [d for d in dirnames if (Path(dirpath) / d) not in skip_paths]
         for item in sorted(discovered_dirs):
             if item not in known:
                 findings.append((item, "UNKNOWN", "not in standard or profile"))
@@ -140,6 +162,8 @@ def main() -> None:
                         help="Optional path to write a CSV report")
     parser.add_argument("--verbose", action="store_true",
                         help="Print all findings to console")
+    parser.add_argument("--no-recurse-known", action="store_true",
+                        help="Do not recurse into folders declared in profile folder_additions")
     args = parser.parse_args()
 
     standard = load_json(STANDARD_PATH, "standard file")
@@ -158,7 +182,10 @@ def main() -> None:
     print()
 
     symlink_map = build_symlink_map(data_root, profile)
-    findings = audit(data_root, folders, standard, symlink_map)
+    skip_paths = None
+    if args.no_recurse_known and profile.get("folder_additions"):
+        skip_paths = collect_addition_paths(data_root, folders, profile["folder_additions"])
+    findings = audit(data_root, folders, standard, symlink_map, skip_paths)
 
     counts = {}
     for _, classification, _ in findings:

@@ -26,6 +26,234 @@
       "key": "rootdown",
       "display_name": "rootdown",
       "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "111025-BOAT",
+      "display_name": "111025-BOAT",
+      "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "DASH",
+      "display_name": "DASH",
+      "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "DEV",
+      "display_name": "DEV",
+      "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "docker-multi",
+      "display_name": "docker-multi",
+      "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "FIGMA",
+      "display_name": "FIGMA",
+      "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "GOOGLEDRIVEAPI",
+      "display_name": "GOOGLEDRIVEAPI",
+      "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "InsightEdu",
+      "display_name": "InsightEdu",
+      "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "KANSHU",
+      "display_name": "KANSHU",
+      "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "n8n",
+      "display_name": "n8n",
+      "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "n8nlocal",
+      "display_name": "n8nlocal",
+      "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "OSMO",
+      "display_name": "OSMO",
+      "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "PULSAR",
+      "display_name": "PULSAR",
+      "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "SCRIPS",
+      "display_name": "SCRIPS",
+      "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "SUPERCOLLIDER",
+      "display_name": "SUPERCOLLIDER",
+      "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "TOOMS",
+      "display_name": "TOOMS",
+      "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "gemini",
+      "display_name": "gemini",
+      "purpose": ""
+    },
+    {
+      "parent": "10_PROJECTS",
+      "key": "geminicli",
+      "display_name": "geminicli",
+      "purpose": ""
+    },
+    {
+      "parent": "20_OPERATIONS",
+      "key": "DataExport",
+      "display_name": "DataExport",
+      "purpose": ""
+    },
+    {
+      "parent": "20_OPERATIONS",
+      "key": "HANDBRAKE",
+      "display_name": "HANDBRAKE",
+      "purpose": ""
+    },
+    {
+      "parent": "20_OPERATIONS",
+      "key": "NAS",
+      "display_name": "NAS",
+      "purpose": ""
+    },
+    {
+      "parent": "20_OPERATIONS",
+      "key": "SCREENPAL",
+      "display_name": "SCREENPAL",
+      "purpose": ""
+    },
+    {
+      "parent": "20_OPERATIONS",
+      "key": "scanopy",
+      "display_name": "scanopy",
+      "purpose": ""
+    },
+    {
+      "parent": "25_PERSONAL",
+      "key": "DOCTORS",
+      "display_name": "DOCTORS",
+      "purpose": ""
+    },
+    {
+      "parent": "25_PERSONAL",
+      "key": "DU GYM 2024",
+      "display_name": "DU GYM 2024",
+      "purpose": ""
+    },
+    {
+      "parent": "25_PERSONAL",
+      "key": "ROTA-CPD",
+      "display_name": "ROTA-CPD",
+      "purpose": ""
+    },
+    {
+      "parent": "30_MEDIA",
+      "key": "HUMBLE BUNDLE AUDIO",
+      "display_name": "HUMBLE BUNDLE AUDIO",
+      "purpose": ""
+    },
+    {
+      "parent": "30_MEDIA",
+      "key": "Loopcloud",
+      "display_name": "Loopcloud",
+      "purpose": ""
+    },
+    {
+      "parent": "30_MEDIA",
+      "key": "media",
+      "display_name": "media",
+      "purpose": ""
+    },
+    {
+      "parent": "30_MEDIA",
+      "key": "MIXPRE BACKUP",
+      "display_name": "MIXPRE BACKUP",
+      "purpose": ""
+    },
+    {
+      "parent": "30_MEDIA",
+      "key": "RESOLUME CLIPS",
+      "display_name": "RESOLUME CLIPS",
+      "purpose": ""
+    },
+    {
+      "parent": "30_MEDIA",
+      "key": "Video Archive",
+      "display_name": "Video Archive",
+      "purpose": ""
+    },
+    {
+      "parent": "40_REFERENCE",
+      "key": "EDA COURSE",
+      "display_name": "EDA COURSE",
+      "purpose": ""
+    },
+    {
+      "parent": "40_REFERENCE",
+      "key": "PANDAS COURSE",
+      "display_name": "PANDAS COURSE",
+      "purpose": ""
+    },
+    {
+      "parent": "40_REFERENCE",
+      "key": "PYTHON LEARN TO PROGRAM",
+      "display_name": "PYTHON LEARN TO PROGRAM",
+      "purpose": ""
+    },
+    {
+      "parent": "50_SYSTEM",
+      "key": "AUDIT",
+      "display_name": "AUDIT",
+      "purpose": ""
+    },
+    {
+      "parent": "50_SYSTEM",
+      "key": "DRIVERS",
+      "display_name": "DRIVERS",
+      "purpose": ""
+    },
+    {
+      "parent": "50_SYSTEM",
+      "key": "METAL MOTIVATION",
+      "display_name": "METAL MOTIVATION",
+      "purpose": ""
+    },
+    {
+      "parent": "50_SYSTEM",
+      "key": "tools",
+      "display_name": "tools",
+      "purpose": ""
     }
   ],
   "folder_overrides": [],
