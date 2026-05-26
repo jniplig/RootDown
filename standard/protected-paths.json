@@ -179,6 +179,176 @@
       "path_pattern": "**/DumpStack.log*",
       "reason": "Windows OS or system-managed path — never move",
       "auto_protect": true
+    },
+    {
+      "path_pattern": "**/Temp/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/$Recycle.Bin/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/$SysReset/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/$WINDOWS.~BT/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/$Windows.~WS/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/.pnpm-store/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/appverifUI.dll",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/Config.Msi/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/Documents and Settings/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/DumpStack.log",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/DumpStack.log.tmp",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/ESD/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/hiberfil.sys",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/inetpub/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/Intel/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/JETBRAINS/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/logUploaderSettings.ini",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/logUploaderSettings_temp.ini",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/nvm4w/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/OneDriveTemp/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/pagefile.sys",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/PerfLogs/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/PortableApps/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/Program Files/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/Program Files (x86)/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/ProgramData/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/Python314/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/Recovery/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/swapfile.sys",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/System Volume Information/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/Users/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/vfcompat.dll",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/Windows/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
+    },
+    {
+      "path_pattern": "**/Windows.old/**",
+      "reason": "User-protected during triage",
+      "auto_protect": false
     }
   ]
 }
