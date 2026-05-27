@@ -6,3 +6,5 @@ migration-report-*.csv
 *_audit.csv
 *.tmp
 *.log
+*_scan.csv
+triage-log.json
