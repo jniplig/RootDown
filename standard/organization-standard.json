@@ -60,15 +60,15 @@
         "review_after_days": null
       },
       "subfolders": [
-        { "key": "01_Family",                 "display_name": "Family",                 "purpose": "Family records, household member information, school or dependent-related documents, and family coordination materials." },
-        { "key": "02_Finance",                "display_name": "Finance",                "purpose": "Banking, taxes, budgets, statements, insurance finance records, and other personal financial administration." },
-        { "key": "03_Property",               "display_name": "Property",               "purpose": "Property ownership, leases, utilities, maintenance documentation, and asset-related records for homes or other property." },
-        { "key": "04_Travel",                 "display_name": "Travel",                 "purpose": "Bookings, itineraries, visa support material, travel confirmations, and trip planning records." },
-        { "key": "05_Health_Admin",           "display_name": "Health Admin",           "purpose": "Appointments, administrative health records, coverage records, and non-clinical medical administration." },
-        { "key": "06_Legal_and_ID",           "display_name": "Legal and ID",           "purpose": "Identity documents, licenses, legal paperwork, government records, and formal personal documentation." },
-        { "key": "07_Personal_Admin",         "display_name": "Personal Admin",         "purpose": "General life administration that does not fit a more specific personal category." },
-        { "key": "08_Warranties_and_Receipts","display_name": "Warranties and Receipts","purpose": "Purchase records, receipts, service confirmations, warranties, and proof-of-purchase material." },
-        { "key": "99_Archive",                "display_name": "Archive",                "purpose": "Historical personal records kept for retention but no longer active." }
+        { "key": "01_Family",                  "display_name": "Family",                  "purpose": "Family records, household member information, school or dependent-related documents, and family coordination materials." },
+        { "key": "02_Finance",                 "display_name": "Finance",                 "purpose": "Banking, taxes, budgets, statements, insurance finance records, and other personal financial administration." },
+        { "key": "03_Property",                "display_name": "Property",                "purpose": "Property ownership, leases, utilities, maintenance documentation, and asset-related records for homes or other property." },
+        { "key": "04_Travel",                  "display_name": "Travel",                  "purpose": "Bookings, itineraries, visa support material, travel confirmations, and trip planning records." },
+        { "key": "05_Health_Admin",            "display_name": "Health Admin",            "purpose": "Appointments, administrative health records, coverage records, and non-clinical medical administration." },
+        { "key": "06_Legal_and_ID",            "display_name": "Legal and ID",            "purpose": "Identity documents, licenses, legal paperwork, government records, and formal personal documentation." },
+        { "key": "07_Personal_Admin",          "display_name": "Personal Admin",          "purpose": "General life administration that does not fit a more specific personal category." },
+        { "key": "08_Warranties_and_Receipts", "display_name": "Warranties and Receipts", "purpose": "Purchase records, receipts, service confirmations, warranties, and proof-of-purchase material." },
+        { "key": "99_Archive",                 "display_name": "Archive",                 "purpose": "Historical personal records kept for retention but no longer active." }
       ]
     },
     {
@@ -80,7 +80,53 @@
         "policy": "permanent",
         "review_after_days": null
       },
-      "subfolders": []
+      "subfolders": [
+        {
+          "key": "00_INBOX",
+          "display_name": "Media Inbox",
+          "purpose": "Unsorted new media arrivals awaiting triage and placement.",
+          "subfolders": []
+        },
+        {
+          "key": "10_DJ",
+          "display_name": "DJ Library",
+          "purpose": "Flat DJ track library. Single directory for Engine DJ and DJ Studio import.",
+          "subfolders": []
+        },
+        {
+          "key": "20_PRODUCTION",
+          "display_name": "Production",
+          "purpose": "Audio production assets — samples, MIDI, presets, project files, and supporting material.",
+          "subfolders": [
+            { "key": "21_SAMPLES",  "display_name": "Samples",  "purpose": "Sample packs, loops, one-shots, and ReCycle files." },
+            { "key": "22_MIDI",     "display_name": "MIDI",     "purpose": "MIDI files and sequences." },
+            { "key": "23_PRESETS",  "display_name": "Presets",  "purpose": "VST and instrument presets organized by synth." },
+            { "key": "24_PROJECTS", "display_name": "Projects", "purpose": "DAW project files. Ableton Live sets and related session material." },
+            { "key": "25_ASSETS",   "display_name": "Assets",   "purpose": "Artwork, PDFs, pack documentation, and production support files." }
+          ]
+        },
+        {
+          "key": "30_VIDEO",
+          "display_name": "Video",
+          "purpose": "Video assets — VJ clips, camera footage, and archived video material.",
+          "subfolders": [
+            { "key": "31_VJ_CLIPS", "display_name": "VJ Clips", "purpose": "Resolume and VJ performance clips." },
+            { "key": "32_FOOTAGE",  "display_name": "Footage",  "purpose": "Raw camera footage. DJI Osmo, action cameras, and video archives." }
+          ]
+        },
+        {
+          "key": "40_FIELD_REC",
+          "display_name": "Field Recordings",
+          "purpose": "Location and live recordings. Sound Devices MixPre backups and event captures.",
+          "subfolders": []
+        },
+        {
+          "key": "90_ARCHIVE",
+          "display_name": "Media Archive",
+          "purpose": "Retired or historical media kept for reference. Inactive event recordings and old library snapshots.",
+          "subfolders": []
+        }
+      ]
     },
     {
       "key": "40_REFERENCE",
@@ -148,8 +194,8 @@
   },
   "metadata": {
     "author": "jniplig",
-    "version": "1.0.0",
-    "last_updated": "2026-04-19",
+    "version": "1.1.0",
+    "last_updated": "2026-05-27",
     "description": "Canonical folder organization standard for RootDown. Platform-agnostic. No hardcoded paths."
   }
 }
