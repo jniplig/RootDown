@@ -17,10 +17,9 @@
     }
   ],
   "folder_overrides": [],
-  "symlinked_folders": [
-    {
-      "key": "10_PROJECTS",
-      "target": null
-    }
+  "symlinked_folders": [],
+  "excluded_paths": [
+    "50_SYSTEM/tools",
+    "30_MEDIA/_handbrake-watch"
   ]
 }

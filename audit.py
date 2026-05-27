@@ -130,10 +130,10 @@ def audit(data_root: Path, folders: list, standard: dict, symlink_map: dict,
         discovered_dirs = []
         for dirpath, dirnames, _ in os.walk(data_root):
             dirnames[:] = [d for d in dirnames if d != ".git"]
-            for d in dirnames:
-                discovered_dirs.append(Path(dirpath) / d)
             if skip_paths:
                 dirnames[:] = [d for d in dirnames if (Path(dirpath) / d) not in skip_paths]
+            for d in dirnames:
+                discovered_dirs.append(Path(dirpath) / d)
         for item in sorted(discovered_dirs):
             if item not in known:
                 findings.append((item, "UNKNOWN", "not in standard or profile"))
@@ -182,9 +182,16 @@ def main() -> None:
     print()
 
     symlink_map = build_symlink_map(data_root, profile)
-    skip_paths = None
+
+    # Build skip_paths from --no-recurse-known and profile excluded_paths
+    skip_paths = set()
     if args.no_recurse_known and profile.get("folder_additions"):
-        skip_paths = collect_addition_paths(data_root, folders, profile["folder_additions"])
+        skip_paths |= collect_addition_paths(data_root, folders, profile["folder_additions"])
+    if profile.get("excluded_paths"):
+        skip_paths |= {data_root / p for p in profile["excluded_paths"]}
+    if not skip_paths:
+        skip_paths = None
+
     findings = audit(data_root, folders, standard, symlink_map, skip_paths)
 
     counts = {}
