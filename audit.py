@@ -12,6 +12,8 @@ Usage:
     python audit.py --profile profiles/profile-personal.json --report audit.csv --verbose
 """
 
+from __future__ import annotations
+
 import argparse
 import csv
 import datetime

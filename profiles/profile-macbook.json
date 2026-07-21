@@ -1,0 +1,21 @@
+{
+  "metadata": {
+    "profile_name": "macbook",
+    "machine": "Chiaras-MacBook-Air",
+    "owner": "jniplig",
+    "created": "2026-07-21",
+    "description": "MacBook Air deployment (Jeremy's account on a shared Mac). Data root resolves to ~/Data. Declares projects cloned locally under 10_PROJECTS so the auditor classifies them as OK rather than UNKNOWN."
+  },
+  "data_root": null,
+  "optional_folders": [],
+  "folder_additions": [
+    {
+      "parent": "10_PROJECTS",
+      "key": "rootdown",
+      "display_name": "rootdown",
+      "purpose": "RootDown standard, deployer and auditor (this repo)."
+    }
+  ],
+  "folder_overrides": [],
+  "symlinked_folders": []
+}

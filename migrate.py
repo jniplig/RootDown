@@ -16,6 +16,8 @@ Usage:
     python migrate.py --apply --report apply.csv      # apply + write CSV
 """
 
+from __future__ import annotations
+
 import argparse
 import csv
 import datetime

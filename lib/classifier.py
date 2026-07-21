@@ -1,5 +1,7 @@
 """RootDown classifier — risk assessment and destination suggestion engine."""
 
+from __future__ import annotations
+
 import fnmatch
 from pathlib import Path
 

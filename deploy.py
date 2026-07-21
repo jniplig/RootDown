@@ -27,8 +27,8 @@ def _insert(folders: list, parent_key: str, addition: dict) -> bool:
         if folder["key"] == parent_key:
             folder.setdefault("subfolders", []).append({
                 "key": addition["key"],
-                "display_name": addition["display_name"],
-                "purpose": addition["purpose"],
+                "display_name": addition.get("display_name", addition["key"]),
+                "purpose": addition.get("purpose", ""),
                 "subfolders": [],
             })
             return True
